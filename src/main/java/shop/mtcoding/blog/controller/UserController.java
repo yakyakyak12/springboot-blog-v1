@@ -33,10 +33,23 @@ public class UserController {
     if (joinDTO.getUsername() == null || joinDTO.getUsername().isEmpty()) {
       return "redirect:/40x";
     }
-    userRepository.save(joinDTO); // 핵심 기능
+    try {
+      userRepository.save(joinDTO);
+    } catch (Exception e) {
+      return "redirect:/50x";
+    }
+    // 핵심 기능
 
     return "redirect:/loginForm";
   }
+
+  // @PostMapping("/join")
+  // public String join(JoinDTO joinDTO) {
+  // System.out.println("username : " + joinDTO.getUsername());
+  // System.out.println("Password : " + joinDTO.getPassword());
+  // System.out.println("Email : " + joinDTO.getEmail());
+  // return "redirect:/loginForm";
+  // }
 
   @GetMapping("/joinForm")
   public String joinForm() {

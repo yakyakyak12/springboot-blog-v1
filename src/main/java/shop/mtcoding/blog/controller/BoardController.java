@@ -34,12 +34,22 @@ public class BoardController {
     // 1. 유효성 검사 X
     // 2. 인증검사 X
 
-    List<Board> boardList = boardRepository.findAll(page);
+    List<Board> boardList = boardRepository.findAll(page); // page = 1
+    int totalCount = boardRepository.count(); // totalCount = 5
+    int totalPage = totalCount / 3; // totalPage = 1
+    if (totalCount % 3 > 0) {
+      totalPage = totalPage + 1; // totalPage = 2
+    }
+    boolean last = totalPage - 1 == page;
+
     request.setAttribute("boardList", boardList);
     request.setAttribute("prevPage", page - 1);
     request.setAttribute("nextPage", page + 1);
     request.setAttribute("first", page == 0 ? true : false);
-    request.setAttribute("last", false);
+    request.setAttribute("last", last);
+    request.setAttribute("totalPage", totalPage);
+    request.setAttribute("totalCount", totalCount);
+
     return "index";
   }
 
@@ -75,7 +85,17 @@ public class BoardController {
   // localhost:8080/board/1
   // localhost:8080/board/50
   @GetMapping("/board/{id}")
-  public String detail(@PathVariable Integer id) {
+  public String detail(@PathVariable Integer id, HttpServletRequest request) {
+    User sessionUser = (User) session.getAttribute("sessionUser"); // 세션접근
+    Board board = boardRepository.findById(id);
+
+    boolean pageOwner = false;
+    if (sessionUser != null) {
+      pageOwner = sessionUser.getId() == board.getUser().getId(); // 비지니스 로직
+    }
+
+    request.setAttribute("board", board);
+    request.setAttribute("pageOwner", pageOwner);
     return "board/detailForm";
   }
 }

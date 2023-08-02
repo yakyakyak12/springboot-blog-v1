@@ -1,11 +1,13 @@
 {{> /layout/header}}
 
 <div class="container p-4">
+  {{#pageOwner}}
   <div class="d-flex container mb-4">
     <button class="ms-auto btn btn-secondary m-1">돌아가기</button>
     <button class="btn btn-warning m-1">수정</button>
     <button class="btn btn-danger m-1">삭제</button>
   </div>
+  {{/pageOwner}}
 
   <div class="d-flex justify-content-between p-1">
     <div class="d-flex justify-content-start">
@@ -17,14 +19,16 @@
   </div>
   <!--요청을 하면 localhost:8080/board/save POST로 요청됨.
   title=사용자입력값&content=사용자값 x-www-form-urlencoded -->
+
+  {{#board}}
   <div class="card p-3">
     <div>
-      <h2><b>제목</b></h2>
+      <h2><b>{{title}}</b></h2>
       <hr />
-      <div class="container m-4 p-2">내용입니다</div>
+      <div class="container m-4 p-2">{{content}}</div>
     </div>
   </div>
-
+  {{/board}}
 
 
   <!-- 댓글 -->

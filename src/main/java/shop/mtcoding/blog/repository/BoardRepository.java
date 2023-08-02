@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import shop.mtcoding.blog.dto.UpdateDTO;
 import shop.mtcoding.blog.dto.WriteDTO;
 import shop.mtcoding.blog.model.Board;
 
@@ -62,9 +63,18 @@ public class BoardRepository {
 
   @Transactional
   public void deleteById(Integer id) {
-    Query query = em.createNativeQuery("delete from board_tb where id = :id", Board.class);
+    Query query = em.createNativeQuery("delete from board_tb where id = :id");
     query.setParameter("id", id);
     query.executeUpdate();
 
+  }
+
+  @Transactional
+  public void update(UpdateDTO updateDTO, Integer id) {
+    Query query = em.createNativeQuery("update board_tb set title = :title, content = :content where id = :id");
+    query.setParameter("id", id);
+    query.setParameter("title", updateDTO.getTitle());
+    query.setParameter("content", updateDTO.getContent());
+    query.executeUpdate();
   }
 }

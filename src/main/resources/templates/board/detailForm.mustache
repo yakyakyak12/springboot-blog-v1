@@ -5,7 +5,10 @@
   <div class="d-flex container mb-4">
     <button class="ms-auto btn btn-secondary m-1">돌아가기</button>
     <button class="btn btn-warning m-1">수정</button>
-    <button class="btn btn-danger m-1">삭제</button>
+    <form action="/board/{{board.id}}/delete" method="post">
+      <button type="submit" class="btn btn-danger m-1">삭제</button>
+    </form>
+
   </div>
   {{/pageOwner}}
 

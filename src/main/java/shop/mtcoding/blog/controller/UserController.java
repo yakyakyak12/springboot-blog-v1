@@ -5,11 +5,14 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import shop.mtcoding.blog.dto.JoinDTO;
 import shop.mtcoding.blog.dto.LoginDTO;
+import shop.mtcoding.blog.dto.UpdateDTO;
+import shop.mtcoding.blog.dto.UserUpdateDTO;
 import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.repository.UserRepository;
 
@@ -80,49 +83,6 @@ public class UserController {
     return "redirect:/loginForm";
   }
 
-  // 정상인
-  // @PostMapping("/join")
-  // public String join(String username, String password, String email) {
-  // // username=ssar&password=1234&email=ssar@nate.com
-  // System.out.println("username : " + username);
-  // System.out.println("password : " + password);
-  // System.out.println("email : " + email);
-
-  // return "redirect:/loginForm";
-  // }
-
-  // 비정상
-  // @PostMapping("/join")
-  // public String join(HttpServletRequest request) throws IOException {
-  // // username=ssar&password=1234&email=ssar@nate.com
-  // BufferedReader br = request.getReader();
-
-  // // 버퍼가 소비됨
-  // String body = br.readLine();
-
-  // // 버퍼에 값이 없어서, 못꺼냄.
-  // String username = request.getParameter("username");
-
-  // System.out.println("body : " + body);
-  // System.out.println("username : " + username);
-
-  // return "redirect:/loginForm";
-  // }
-
-  // 약간 정상
-  // DS(컨트롤러 메서드 찾기, 바디데이터 파싱)
-  // DS가 바디데이터를 파싱안하고 컨트롤러 메서드만 찾은 상황
-  // @PostMapping("/join")
-  // public String join(HttpServletRequest request) {
-  // String username = request.getParameter("username");
-  // String password = request.getParameter("password");
-  // String email = request.getParameter("email");
-  // System.out.println("username : " + username);
-  // System.out.println("password : " + password);
-  // System.out.println("email : " + email);
-  // return "redirect:/loginForm";
-  // }
-
   // ip주소 부여 : 10.5.9.200:8080 -> mtcoding.com:8080
   // localhost, 127.0.0.1
   // a태그 form태그 method=get
@@ -149,4 +109,59 @@ public class UserController {
     session.invalidate(); // 세션 무효화 (내 서랍을 비우는 것)
     return "redirect:/";
   }
+
+  @PostMapping("user/{id}/update")
+  public String update(@PathVariable Integer id, UserUpdateDTO userUpdateDTO) {
+    // 1. 인증 검사
+
+    // 2. 권한 체크
+
+    // 3. 핵심 로직
+    // update board_tb set title = :title, content = :content where id = :id
+    userRepository.update(userUpdateDTO, id);
+    return "redirect:/loginForm";
+  }
 }
+
+// 정상인
+// @PostMapping("/join")
+// public String join(String username, String password, String email) {
+// // username=ssar&password=1234&email=ssar@nate.com
+// System.out.println("username : " + username);
+// System.out.println("password : " + password);
+// System.out.println("email : " + email);
+
+// return "redirect:/loginForm";
+// }
+
+// 비정상
+// @PostMapping("/join")
+// public String join(HttpServletRequest request) throws IOException {
+// // username=ssar&password=1234&email=ssar@nate.com
+// BufferedReader br = request.getReader();
+
+// // 버퍼가 소비됨
+// String body = br.readLine();
+
+// // 버퍼에 값이 없어서, 못꺼냄.
+// String username = request.getParameter("username");
+
+// System.out.println("body : " + body);
+// System.out.println("username : " + username);
+
+// return "redirect:/loginForm";
+// }
+
+// 약간 정상
+// DS(컨트롤러 메서드 찾기, 바디데이터 파싱)
+// DS가 바디데이터를 파싱안하고 컨트롤러 메서드만 찾은 상황
+// @PostMapping("/join")
+// public String join(HttpServletRequest request) {
+// String username = request.getParameter("username");
+// String password = request.getParameter("password");
+// String email = request.getParameter("email");
+// System.out.println("username : " + username);
+// System.out.println("password : " + password);
+// System.out.println("email : " + email);
+// return "redirect:/loginForm";
+// }

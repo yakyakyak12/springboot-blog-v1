@@ -3,7 +3,7 @@
 <div class="container p-4">
   {{#pageOwner}}
   <div class="d-flex container mb-4">
-    <button class="ms-auto btn btn-secondary m-1">돌아가기</button>
+    <a class="ms-auto btn btn-secondary m-1" href="/">돌아가기</a>
     <a class="btn btn-warning m-1" href="/board/{{board.id}}/updateForm">수정</a>
     <form action="/board/{{board.id}}/delete" method="post">
       <button type="submit" class="btn btn-danger m-1">삭제</button>
@@ -16,10 +16,12 @@
     <div class="d-flex justify-content-start">
       <div class="">글번호 : 1</div>
     </div>
+    {{#board}}
     <div class="d-flex justify-content-end">
-      <div class="">작성자 : ssar</div>
+      <div class="">작성자 : </div>
     </div>
   </div>
+  {{/board}}
   <!--요청을 하면 localhost:8080/board/save POST로 요청됨.
   title=사용자입력값&content=사용자값 x-www-form-urlencoded -->
 

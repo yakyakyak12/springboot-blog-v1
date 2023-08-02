@@ -10,7 +10,7 @@
       <form action="/board/{{board.id}}/update" method="post" enctype="application/x-www-form-urlencoded">
         <div class="mb-3">
           <input type="text" class="form-control" placeholder="Enter title" name="title" required maxlength="100"
-            value="{{board.id}}">
+            value="{{board.title}}">
         </div>
         <div class="mb-3">
           <textarea class="form-control" rows="5" name="content">{{board.content}}</textarea>

@@ -49,6 +49,7 @@ public class BoardController {
     // 3. 핵심 로직
     Board board = boardRepository.findById(id);
     request.setAttribute("board", board);
+
     return "board/updateForm";
   }
 
@@ -145,6 +146,7 @@ public class BoardController {
     }
 
     request.setAttribute("board", board);
+    request.setAttribute("username", board.getUser().getUsername());
     request.setAttribute("pageOwner", pageOwner);
     return "board/detailForm";
   }

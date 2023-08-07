@@ -28,6 +28,6 @@ public class Board {
   private String content;
   private Timestamp createdAt;
 
-  @ManyToOne
+  @ManyToOne // 연관 관계를 설정해주는 어노테이션
   private User user;
 }

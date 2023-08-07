@@ -8,17 +8,16 @@
     <form action="/board/{{board.id}}/delete" method="post">
       <button type="submit" class="btn btn-danger m-1">삭제</button>
     </form>
-
   </div>
   {{/pageOwner}}
 
+  {{#board}}
   <div class="d-flex justify-content-between p-1">
     <div class="d-flex justify-content-start">
-      <div class="">글번호 : 1</div>
+      <div class="">글번호 : {{id}}</div>
     </div>
-    {{#board}}
     <div class="d-flex justify-content-end">
-      <div class="">작성자 : </div>
+      <div class="">작성자 : {{username}}</div>
     </div>
   </div>
   {{/board}}

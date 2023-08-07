@@ -1,18 +1,18 @@
 package shop.mtcoding.blog.controller;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import shop.mtcoding.blog.dto.JoinDTO;
 import shop.mtcoding.blog.dto.LoginDTO;
-import shop.mtcoding.blog.dto.UpdateDTO;
-import shop.mtcoding.blog.dto.UserUpdateDTO;
 import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.repository.UserRepository;
 
@@ -25,15 +25,14 @@ public class UserController {
   @Autowired
   private HttpSession session; // request는 가방, session은 서랍
 
-  @ResponseBody
-  @GetMapping("/test/login")
-  public String testLogin() {
-    User sessionUser = (User) session.getAttribute("sessionUser");
-    if (sessionUser == null) {
-      return "로그인이 되지 않았습니다";
-    } else {
-      return "로그인 됨 : " + sessionUser.getUsername();
+  // localhost:8080/check?username=ssar
+  @GetMapping("/check")
+  public ResponseEntity<String> check(String username) {
+    User user = userRepository.findByUsername(username);
+    if (user != null) {
+      return new ResponseEntity<String>("유저네임이 중복 되었습니다", HttpStatus.BAD_REQUEST);
     }
+    return new ResponseEntity<String>("유저네임을 사용할 수 있습니다", HttpStatus.OK);
   }
 
   @PostMapping("/login")
@@ -47,8 +46,8 @@ public class UserController {
     }
 
     // 핵심 기능
-    System.out.println("테스트 : username : " + loginDTO.getUsername());
-    System.out.println("테스트 : password : " + loginDTO.getPassword());
+    // System.out.println("테스트 : username : " + loginDTO.getUsername());
+    // System.out.println("테스트 : password : " + loginDTO.getPassword());
 
     try {
       User user = userRepository.findByUsernameAndPassword(loginDTO);
@@ -57,12 +56,12 @@ public class UserController {
     } catch (Exception e) {
       return "redirect:/exLogin";
     }
+
   }
 
   // 실무
   @PostMapping("/join")
   public String join(JoinDTO joinDTO) {
-
     // validation check (유효성 검사)
     if (joinDTO.getUsername() == null || joinDTO.getUsername().isEmpty()) {
       return "redirect:/40x";
@@ -74,12 +73,12 @@ public class UserController {
       return "redirect:/40x";
     }
 
-    try {
-      userRepository.save(joinDTO); // 핵심 기능
-    } catch (Exception e) {
+    // DB에 해당 username이 있는지 체크해보기
+    User user = userRepository.findByUsername(joinDTO.getUsername());
+    if (user != null) {
       return "redirect:/50x";
     }
-
+    userRepository.save(joinDTO); // 핵심 기능
     return "redirect:/loginForm";
   }
 
@@ -110,58 +109,46 @@ public class UserController {
     return "redirect:/";
   }
 
-  @PostMapping("user/{id}/update")
-  public String update(@PathVariable Integer id, UserUpdateDTO userUpdateDTO) {
-    // 1. 인증 검사
+  // 정상인
+  // @PostMapping("/join")
+  // public String join(String username, String password, String email) {
+  // // username=ssar&password=1234&email=ssar@nate.com
+  // System.out.println("username : " + username);
+  // System.out.println("password : " + password);
+  // System.out.println("email : " + email);
 
-    // 2. 권한 체크
+  // return "redirect:/loginForm";
+  // }
 
-    // 3. 핵심 로직
-    // update board_tb set title = :title, content = :content where id = :id
-    userRepository.update(userUpdateDTO, id);
-    return "redirect:/loginForm";
-  }
+  // 비정상
+  // @PostMapping("/join")
+  // public String join(HttpServletRequest request) throws IOException {
+  // // username=ssar&password=1234&email=ssar@nate.com
+  // BufferedReader br = request.getReader();
+
+  // // 버퍼가 소비됨
+  // String body = br.readLine();
+
+  // // 버퍼에 값이 없어서, 못꺼냄.
+  // String username = request.getParameter("username");
+
+  // System.out.println("body : " + body);
+  // System.out.println("username : " + username);
+
+  // return "redirect:/loginForm";
+  // }
+
+  // 약간 정상
+  // DS(컨트롤러 메서드 찾기, 바디데이터 파싱)
+  // DS가 바디데이터를 파싱안하고 컨트롤러 메서드만 찾은 상황
+  // @PostMapping("/join")
+  // public String join(HttpServletRequest request) {
+  // String username = request.getParameter("username");
+  // String password = request.getParameter("password");
+  // String email = request.getParameter("email");
+  // System.out.println("username : " + username);
+  // System.out.println("password : " + password);
+  // System.out.println("email : " + email);
+  // return "redirect:/loginForm";
+  // }
 }
-
-// 정상인
-// @PostMapping("/join")
-// public String join(String username, String password, String email) {
-// // username=ssar&password=1234&email=ssar@nate.com
-// System.out.println("username : " + username);
-// System.out.println("password : " + password);
-// System.out.println("email : " + email);
-
-// return "redirect:/loginForm";
-// }
-
-// 비정상
-// @PostMapping("/join")
-// public String join(HttpServletRequest request) throws IOException {
-// // username=ssar&password=1234&email=ssar@nate.com
-// BufferedReader br = request.getReader();
-
-// // 버퍼가 소비됨
-// String body = br.readLine();
-
-// // 버퍼에 값이 없어서, 못꺼냄.
-// String username = request.getParameter("username");
-
-// System.out.println("body : " + body);
-// System.out.println("username : " + username);
-
-// return "redirect:/loginForm";
-// }
-
-// 약간 정상
-// DS(컨트롤러 메서드 찾기, 바디데이터 파싱)
-// DS가 바디데이터를 파싱안하고 컨트롤러 메서드만 찾은 상황
-// @PostMapping("/join")
-// public String join(HttpServletRequest request) {
-// String username = request.getParameter("username");
-// String password = request.getParameter("password");
-// String email = request.getParameter("email");
-// System.out.println("username : " + username);
-// System.out.println("password : " + password);
-// System.out.println("email : " + email);
-// return "redirect:/loginForm";
-// }

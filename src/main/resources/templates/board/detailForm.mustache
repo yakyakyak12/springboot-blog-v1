@@ -40,8 +40,9 @@
     <div class="card-header"><b>댓글</b></div>
     <div class="card-body">
       <form action="/reply/save" method="post">
+        <input type="hidden" name="boardId" value="{{board.id}}">
         <div class="mb-3">
-          <textarea class="form-control" rows="1" name="content"></textarea>
+          <textarea class="form-control" rows="2" name="comment"></textarea>
         </div>
         <div class="d-flex justify-content-end">
           <button type="submit" class="btn btn-outline-primary">댓글등록</button>

@@ -11,12 +11,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import shop.mtcoding.blog.dto.BoardDetailDTO;
 import shop.mtcoding.blog.dto.UpdateDTO;
 import shop.mtcoding.blog.dto.WriteDTO;
 import shop.mtcoding.blog.model.Board;
+import shop.mtcoding.blog.model.Reply;
 import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.repository.BoardRepository;
+import shop.mtcoding.blog.repository.ReplyRepository;
 
 @Controller
 public class BoardController {
@@ -26,6 +30,23 @@ public class BoardController {
 
   @Autowired
   private BoardRepository boardRepository;
+
+  @Autowired
+  private ReplyRepository replyRepository;
+
+  @ResponseBody
+  @GetMapping("/test/reply")
+  public List<Reply> test2() {
+    List<Reply> replys = replyRepository.findByBoardId(1);
+    return replys;
+  }
+
+  @ResponseBody
+  @GetMapping("/test/board/1")
+  public Board test() {
+    Board board = boardRepository.findById(1);
+    return board;
+  }
 
   @PostMapping("board/{id}/update")
   public String update(@PathVariable Integer id, UpdateDTO updateDTO) {
@@ -138,15 +159,15 @@ public class BoardController {
   @GetMapping("/board/{id}")
   public String detail(@PathVariable Integer id, HttpServletRequest request) {
     User sessionUser = (User) session.getAttribute("sessionUser"); // 세션접근
-    Board board = boardRepository.findById(id);
+    List<BoardDetailDTO> dtos = boardRepository.findByIdJoinReply(id);
 
+    // 인증 검사
     boolean pageOwner = false;
     if (sessionUser != null) {
-      pageOwner = sessionUser.getId() == board.getUser().getId(); // 비지니스 로직
+      pageOwner = sessionUser.getId() == dtos.get(0).getBoardUserId(); // 비지니스 로직
     }
 
-    request.setAttribute("board", board);
-    request.setAttribute("username", board.getUser().getUsername());
+    request.setAttribute("dtos", dtos);
     request.setAttribute("pageOwner", pageOwner);
     return "board/detailForm";
   }

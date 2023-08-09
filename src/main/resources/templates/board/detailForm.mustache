@@ -71,9 +71,11 @@
             {{replyUserUsername}}</div>
           <div>{{replyComment}}</div>
         </div>
+        {{#replyOwner}}
         <form action="/reply/{{replyId}}/delete" method="post">
           <button class="btn">🗑</button>
         </form>
+        {{/replyOwner}}
       </div>
       {{/replyId}}
       {{/dtos}}

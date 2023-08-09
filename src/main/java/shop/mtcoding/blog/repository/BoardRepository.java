@@ -22,7 +22,8 @@ public class BoardRepository {
   @Autowired
   private EntityManager em;
 
-  public List<BoardDetailDTO> findByIdJoinReply(Integer boardId) {
+  // 동적쿼리
+  public List<BoardDetailDTO> findByIdJoinReply(Integer boardId, Integer sessionUserId) {
     String sql = "select ";
     sql += "b.id board_id, ";
     sql += "b.content board_content, ";
@@ -31,7 +32,12 @@ public class BoardRepository {
     sql += "r.id reply_id, ";
     sql += "r.comment reply_comment, ";
     sql += "r.user_id reply_user_id, ";
-    sql += "ru.username reply_user_username ";
+    sql += "ru.username reply_user_username, ";
+    if (sessionUserId == null) {
+      sql += "false reply_owner ";
+    } else {
+      sql += "case when r.user_id = :sessionUserId then true else false end reply_owner ";
+    }
     sql += "from board_tb b left outer join reply_tb r ";
     sql += "on b.id = r.board_id ";
     sql += "left outer join user_tb ru ";
@@ -40,10 +46,36 @@ public class BoardRepository {
     sql += "order by r.id desc";
     Query query = em.createNativeQuery(sql);
     query.setParameter("boardId", boardId);
+    if (sessionUserId != null) {
+      query.setParameter("sessionUserId", sessionUserId);
+    }
+
     JpaResultMapper mapper = new JpaResultMapper();
     List<BoardDetailDTO> dtos = mapper.list(query, BoardDetailDTO.class);
     return dtos;
+  }
 
+  public Board findById(Integer id) {
+    Query query = em.createNativeQuery("select * from board_tb where id = :id", Board.class);
+    query.setParameter("id", id);
+    Board board = (Board) query.getSingleResult();
+    return board;
+  }
+
+  @Transactional
+  public void deleteById(Integer id) {
+    Query query = em.createNativeQuery("delete from board_tb where id = :id");
+    query.setParameter("id", id);
+    query.executeUpdate();
+  }
+
+  @Transactional
+  public void update(UpdateDTO updateDTO, Integer id) {
+    Query query = em.createNativeQuery("update board_tb set title = :title, content = :content where id = :id");
+    query.setParameter("id", id);
+    query.setParameter("title", updateDTO.getTitle());
+    query.setParameter("content", updateDTO.getContent());
+    query.executeUpdate();
   }
 
   // select if, title from board_tb
@@ -77,30 +109,6 @@ public class BoardRepository {
     query.setParameter("title", writeDTO.getTitle());
     query.setParameter("content", writeDTO.getContent());
     query.setParameter("userId", userId);
-    query.executeUpdate();
-  }
-
-  public Board findById(Integer id) {
-    Query query = em.createNativeQuery("select * from board_tb where id = :id", Board.class);
-    query.setParameter("id", id);
-    Board board = (Board) query.getSingleResult();
-    return board;
-  }
-
-  @Transactional
-  public void deleteById(Integer id) {
-    Query query = em.createNativeQuery("delete from board_tb where id = :id");
-    query.setParameter("id", id);
-    query.executeUpdate();
-
-  }
-
-  @Transactional
-  public void update(UpdateDTO updateDTO, Integer id) {
-    Query query = em.createNativeQuery("update board_tb set title = :title, content = :content where id = :id");
-    query.setParameter("id", id);
-    query.setParameter("title", updateDTO.getTitle());
-    query.setParameter("content", updateDTO.getContent());
     query.executeUpdate();
   }
 }

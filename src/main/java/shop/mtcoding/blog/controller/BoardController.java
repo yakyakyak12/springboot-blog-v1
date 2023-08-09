@@ -159,7 +159,12 @@ public class BoardController {
   @GetMapping("/board/{id}")
   public String detail(@PathVariable Integer id, HttpServletRequest request) {
     User sessionUser = (User) session.getAttribute("sessionUser"); // 세션접근
-    List<BoardDetailDTO> dtos = boardRepository.findByIdJoinReply(id);
+    List<BoardDetailDTO> dtos = null;
+    if (sessionUser == null) {
+      dtos = boardRepository.findByIdJoinReply(id, null);
+    } else {
+      dtos = boardRepository.findByIdJoinReply(id, sessionUser.getId());
+    }
 
     // 인증 검사
     boolean pageOwner = false;

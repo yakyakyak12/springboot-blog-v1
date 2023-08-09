@@ -46,4 +46,5 @@ public class ReplyController {
     return "redirect:/board/" + replyWriteDTO.getBoardId();
     // 상세보기로 리턴한다.
   }
+
 }

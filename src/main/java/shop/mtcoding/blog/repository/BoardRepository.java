@@ -91,10 +91,30 @@ public class BoardRepository {
     return count.intValue();
   }
 
+  public int count(String keyWord) {
+    Query query = em.createNativeQuery("select count(*) from board_tb where title like :keyWord");
+    query.setParameter("keyWord", "%" + keyWord + "%");
+    // 원래는 Object 배열로 리턴 받는다, Object 배열은 칼럼의 연속이다.
+    // 그룹함수를 써서, 하나의 칼럼을 조회하면, Object로 리턴된다.
+    BigInteger count = (BigInteger) query.getSingleResult();
+    return count.intValue();
+  }
+
   // localhost:8080?page=0
   public List<Board> findAll(int page) {
     final int SIZE = 3;
     Query query = em.createNativeQuery("select * from board_tb order by id desc limit :page, :size", Board.class);
+    query.setParameter("page", page * SIZE);
+    query.setParameter("size", SIZE);
+    return query.getResultList();
+  }
+
+  public List<Board> findAll(int page, String keyWord) {
+    System.out.println("테스트 : " + page);
+    final int SIZE = 3;
+    Query query = em.createNativeQuery(
+        "select * from board_tb where title like :keyWord order by id desc limit :page, :size", Board.class);
+    query.setParameter("keyWord", "%" + keyWord + "%");
     query.setParameter("page", page * SIZE);
     query.setParameter("size", SIZE);
     return query.getResultList();

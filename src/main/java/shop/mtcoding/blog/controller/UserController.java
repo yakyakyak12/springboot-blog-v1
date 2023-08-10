@@ -1,5 +1,6 @@
 package shop.mtcoding.blog.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -115,7 +116,14 @@ public class UserController {
   }
 
   @GetMapping("/user/updateForm")
-  public String updateForm() {
+  public String updateForm(HttpServletRequest request) {
+    User sessionUser = (User) session.getAttribute("sessionUser");
+    if (sessionUser == null) {
+      return "redirect:/loginForm";
+
+    }
+    User user = userRepository.findByUsername(sessionUser.getUsername());
+    request.setAttribute("user", user);
     return "user/updateForm";
   }
 

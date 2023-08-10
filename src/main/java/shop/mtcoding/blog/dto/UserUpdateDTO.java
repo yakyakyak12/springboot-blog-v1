@@ -18,4 +18,11 @@ public class UserUpdateDTO {
   private String username;
   private String password;
   private String email;
+
+  public UserUpdateDTO(String username, String password, String email) {
+    this.username = username;
+    this.password = password;
+    this.email = email;
+  }
+
 }
